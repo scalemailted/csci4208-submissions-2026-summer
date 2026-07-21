@@ -22,7 +22,8 @@ The same workflow checks the instructor roadmap on every push and once each hour
 <!-- STATUS:START -->
 | Item | Key | Status |
 |---|---|---|
-| No assignments have been published yet. | — | — |
+| Lab 01 — HTML-first Interactive Game (minimal JavaScript) [#1](https://github.com/scalemailted/csci4208-submissions-2026-summer/issues/1) | `lab-01` | Open |
+| Lab 02 — CSS Crash Course [#2](https://github.com/scalemailted/csci4208-submissions-2026-summer/issues/2) | `lab-02` | Open |
 <!-- STATUS:END -->
 
 ## Repository layout
