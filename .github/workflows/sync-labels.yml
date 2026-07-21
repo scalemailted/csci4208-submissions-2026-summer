@@ -1,0 +1,29 @@
+name: Sync summer course labels
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: summer-course-automation-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  sync-labels:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out the student repository
+        uses: actions/checkout@v7
+
+      - name: Create or update canonical course labels
+        uses: actions/github-script@v9
+        with:
+          retries: 3
+          script: |
+            const syncLabels = require('./.github/scripts/sync-labels.cjs');
+            await syncLabels({ github, context, core });
