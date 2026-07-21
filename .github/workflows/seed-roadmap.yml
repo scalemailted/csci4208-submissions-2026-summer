@@ -6,7 +6,7 @@ on:
     branches:
       - main
   schedule:
-    # Away from the top of the hour to reduce GitHub Actions schedule congestion.
+    # Poll the instructor roadmap once each hour.
     - cron: "23 * * * *"
 
 permissions:
@@ -24,12 +24,12 @@ jobs:
 
     steps:
       - name: Check out the default branch
-        uses: actions/checkout@v7
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.event.repository.default_branch }}
           fetch-depth: 0
 
-      - name: Sync canonical course labels
+      - name: Sync canonical Summer 2026 labels
         uses: actions/github-script@v9
         with:
           retries: 3
@@ -37,8 +37,13 @@ jobs:
             const syncLabels = require('./.github/scripts/sync-labels.cjs');
             await syncLabels({ github, context, core });
 
-      - name: Create or update published assignment Issues
+      - name: Reconcile the active Summer 2026 assignment Issues
         id: roadmap
+        env:
+          CLOSE_STALE_ROADMAP_ISSUES: "true"
+          RESPECT_CLOSED: "true"
+          DONT_REOPEN_IF_LABELED: "completed,approved"
+          CLOSE_WHEN_LABELED: "approved"
         uses: actions/github-script@v9
         with:
           retries: 3

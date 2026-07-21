@@ -1,3 +1,28 @@
 {
-  "manifestUrl": "https://raw.githubusercontent.com/scalemailted/CSCI4208-Summer2026/main/.github/course-manifest.json"
+  "manifestUrl": "https://raw.githubusercontent.com/scalemailted/CSCI4208-Summer2026/main/.github/course-manifest.json",
+  "issueAliases": {
+    "capstone": [
+      "project-02",
+      "capstone-01",
+      "capstone-01-proposal"
+    ]
+  },
+  "retireKeys": [
+    "lab-03",
+    "react-labs-planned"
+  ],
+  "closeStaleRoadmapIssues": true,
+  "removeLabelsOnSync": [
+    "assignment",
+    "project",
+    "project-02",
+    "capstone-01",
+    "capstone-01-proposal",
+    "React",
+    "Vite",
+    "optional",
+    "planned",
+    "lab-03",
+    "react-labs-planned"
+  ]
 }

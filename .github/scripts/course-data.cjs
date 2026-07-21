@@ -30,6 +30,45 @@ function requireString(value, label) {
   return value.trim();
 }
 
+function optionalStringArray(value, label) {
+  if (value === undefined) return [];
+  if (!Array.isArray(value)) throw new Error(`${label} must be an array when supplied.`);
+  return value.map((entry, index) => requireString(entry, `${label}[${index}]`));
+}
+
+function normalizeSourceConfig(source) {
+  if (!source || typeof source !== 'object' || Array.isArray(source)) {
+    throw new Error(`${SOURCE_PATH} must contain a JSON object.`);
+  }
+
+  const issueAliases = {};
+  if (source.issueAliases !== undefined) {
+    if (!source.issueAliases || typeof source.issueAliases !== 'object' || Array.isArray(source.issueAliases)) {
+      throw new Error(`${SOURCE_PATH}.issueAliases must be an object when supplied.`);
+    }
+    for (const [key, aliases] of Object.entries(source.issueAliases)) {
+      const normalizedKey = requireString(key, `${SOURCE_PATH}.issueAliases key`).toLowerCase();
+      issueAliases[normalizedKey] = optionalStringArray(
+        aliases,
+        `${SOURCE_PATH}.issueAliases.${key}`
+      ).map((entry) => entry.toLowerCase());
+    }
+  }
+
+  return {
+    ...source,
+    manifestUrl: requireString(source.manifestUrl, `${SOURCE_PATH}.manifestUrl`),
+    issueAliases,
+    retireKeys: optionalStringArray(source.retireKeys, `${SOURCE_PATH}.retireKeys`)
+      .map((entry) => entry.toLowerCase()),
+    removeLabelsOnSync: optionalStringArray(
+      source.removeLabelsOnSync,
+      `${SOURCE_PATH}.removeLabelsOnSync`
+    ),
+    closeStaleRoadmapIssues: source.closeStaleRoadmapIssues !== false
+  };
+}
+
 function sleep(milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
@@ -103,7 +142,7 @@ function getSourceCoordinates(manifest) {
 
 function rawFileUrl(manifest, filePath) {
   const { owner, repository, ref } = getSourceCoordinates(manifest);
-  return `https://raw.githubusercontent.com/${encodeURIComponent(owner)}/${encodeURIComponent(repository)}/${ref}/${encodeRepositoryPath(filePath)}`;
+  return `https://raw.githubusercontent.com/${encodeURIComponent(owner)}/${encodeURIComponent(repository)}/${encodeURIComponent(ref)}/${encodeRepositoryPath(filePath)}`;
 }
 
 function repositoryFileUrl(manifest, filePath) {
@@ -111,7 +150,7 @@ function repositoryFileUrl(manifest, filePath) {
   const { owner, repository, ref } = getSourceCoordinates(manifest);
   const rawPath = requireString(filePath, 'repository file path');
   const view = rawPath.endsWith('/') ? 'tree' : 'blob';
-  return `https://github.com/${encodeURIComponent(owner)}/${encodeURIComponent(repository)}/${view}/${ref}/${encodeRepositoryPath(rawPath)}`;
+  return `https://github.com/${encodeURIComponent(owner)}/${encodeURIComponent(repository)}/${view}/${encodeURIComponent(ref)}/${encodeRepositoryPath(rawPath)}`;
 }
 
 function courseRepositoryUrl(manifest) {
@@ -141,13 +180,8 @@ function validateManifest(manifest) {
 }
 
 async function loadCourseData({ core, roadmap = true, labels = true } = {}) {
-  const source = readJsonFile(SOURCE_PATH);
-  const manifestUrl = (process.env.COURSE_MANIFEST_URL || source.manifestUrl || '').trim();
-  if (!manifestUrl) {
-    throw new Error(
-      `${SOURCE_PATH} must define manifestUrl, or the COURSE_MANIFEST_URL repository variable must be set.`
-    );
-  }
+  const sourceConfig = normalizeSourceConfig(readJsonFile(SOURCE_PATH));
+  const manifestUrl = (process.env.COURSE_MANIFEST_URL || sourceConfig.manifestUrl).trim();
 
   const manifest = await fetchJson(manifestUrl, 'course manifest', core);
   validateManifest(manifest);
@@ -168,6 +202,7 @@ async function loadCourseData({ core, roadmap = true, labels = true } = {}) {
   }
 
   return {
+    sourceConfig,
     manifest,
     manifestUrl,
     roadmap: roadmapDocument,
