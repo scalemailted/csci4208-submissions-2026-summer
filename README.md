@@ -24,6 +24,10 @@ The same workflow checks the instructor roadmap on every push and once each hour
 |---|---|---|
 | Lab 01 — HTML-first Interactive Game (minimal JavaScript) [#1](https://github.com/scalemailted/csci4208-submissions-2026-summer/issues/1) | `lab-01` | Open |
 | Lab 02 — CSS Crash Course [#2](https://github.com/scalemailted/csci4208-submissions-2026-summer/issues/2) | `lab-02` | Open |
+| Lab 04 — JavaScript Basics: Hi–Lo Game (MVP → MVC) [#3](https://github.com/scalemailted/csci4208-submissions-2026-summer/issues/3) | `lab-04` | Open |
+| Lab 05 — JavaScript OOP + Phaser (choose one game) [#4](https://github.com/scalemailted/csci4208-submissions-2026-summer/issues/4) | `lab-05` | Open |
+| Lab 06 — REST Client: Quiz Game + Leaderboard (Modules + Fetch) [#5](https://github.com/scalemailted/csci4208-submissions-2026-summer/issues/5) | `lab-06` | Open |
+| Capstone — Thick-Client SPA (Local-First + REST) [#6](https://github.com/scalemailted/csci4208-submissions-2026-summer/issues/6) | `capstone` | Open |
 <!-- STATUS:END -->
 
 ## Repository layout
